@@ -1,9 +1,12 @@
 package io.github.ukuz.spring.web.idempotent.autoconfigure.core;
 
 import io.github.ukuz.spring.web.idempotent.autoconfigure.utils.Holder;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -18,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PluginLoader<T> {
 
     private final static ConcurrentHashMap<Class<?>, PluginLoader> LOADERS = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<Class<?>, Holder<Object>> INSTANCES = new ConcurrentHashMap<>();
     private final Holder<Map<String, Class<T>>> cachedClassHolder = new Holder<>();
 
     private final Class<T> type;
@@ -47,11 +51,67 @@ public class PluginLoader<T> {
 
     }
 
-    public T getAdpativePlugin() {
-        return null;
+    public T getPlugin(String key) {
+        return getPlugin(key, null);
     }
 
-    public T getPlugin(String key) {
+    public T getPlugin(String key, BeanFactory beanFactory) {
+        Map<String, Class<T>> pluginClass = getPluginClass();
+        Class<T> clazz = pluginClass.get(key);
+        if (clazz == null) {
+            throw new IllegalArgumentException("Can not found " + key + "mapping class");
+        }
+
+        Holder holder = INSTANCES.get(clazz);
+        if (holder == null) {
+            INSTANCES.putIfAbsent(clazz, new Holder<>());
+            holder = INSTANCES.get(clazz);
+        }
+        return getInstance(holder, clazz, beanFactory);
+    }
+
+    private T getInstance(Holder holder, Class<T> clazz, BeanFactory beanFactory) {
+        Object obj = holder.getVal();
+        if (obj == null) {
+            synchronized (holder) {
+                obj = holder.getVal();
+                if (obj == null) {
+                    try {
+                        obj = newInstance(clazz, beanFactory);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    }
+                    holder.setVal(obj);
+                }
+            }
+        }
+        return (T) obj;
+    }
+
+    private Object newInstance(Class<?> clazz, BeanFactory beanFactory) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor[] constructors = clazz.getConstructors();
+        for (Constructor constructor : constructors) {
+            if (constructor.getParameters().length > 0) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                Object[] parameters = new Object[parameterTypes.length];
+                if (beanFactory != null) {
+                    for (int i = 0; i < parameterTypes.length; i++) {
+                        if (parameterTypes[i].isAssignableFrom(beanFactory.getClass())) {
+                            parameters[i] = beanFactory;
+                        } else {
+                            parameters[i] = beanFactory.getBean(parameterTypes[i]);
+                        }
+                    }
+                }
+                return constructor.newInstance(parameters);
+            } else {
+               return constructor.newInstance(null);
+            }
+        }
         return null;
     }
 

@@ -12,11 +12,12 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class StoreFactoryBean implements FactoryBean<Store>, ApplicationContextAware {
 
-    private IdempotentProperties properties;
+    private ApplicationContext applicationContext;
 
     @Override
     public Store getObject() {
-        return (Store) PluginLoader.getLoader(Store.class).getPlugin(properties.getStore());
+        IdempotentProperties properties = applicationContext.getBean(IdempotentProperties.class);
+        return (Store) PluginLoader.getLoader(Store.class).getPlugin(properties.getStore(), applicationContext);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class StoreFactoryBean implements FactoryBean<Store>, ApplicationContextA
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.properties = applicationContext.getBean(IdempotentProperties.class);
+        this.applicationContext = applicationContext;
     }
 
     @Override
