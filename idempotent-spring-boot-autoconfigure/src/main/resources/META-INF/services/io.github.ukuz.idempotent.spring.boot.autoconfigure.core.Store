@@ -1,0 +1,1 @@
+redis=io.github.ukuz.idempotent.spring.boot.autoconfigure.core.RedisStore
