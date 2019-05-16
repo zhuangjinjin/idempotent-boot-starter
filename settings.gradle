@@ -1,0 +1,3 @@
+rootProject.name = 'spring-boot-starter-web-idempotent'
+include 'spring-boot-web-idempotent-autoconfigure'
+

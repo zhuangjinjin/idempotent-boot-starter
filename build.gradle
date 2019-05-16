@@ -1,0 +1,21 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.2.RELEASE'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    group 'io.github.ukuz'
+    version '1.0.0'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+
+}
