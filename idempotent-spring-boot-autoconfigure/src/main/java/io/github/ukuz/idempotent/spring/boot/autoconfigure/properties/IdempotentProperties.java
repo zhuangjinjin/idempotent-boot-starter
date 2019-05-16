@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
  * @date 2019-05-16
  */
 @Validated
-@ConfigurationProperties("spring.boot.web.idempotent")
+@ConfigurationProperties("idempotent")
 public class IdempotentProperties {
 
     /**
