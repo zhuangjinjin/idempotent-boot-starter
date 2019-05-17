@@ -13,6 +13,8 @@ public interface Store {
 
     boolean atomicSaveWithExpire(IdempotentKey idempotentKey, int expireTime) throws StoreException;
 
-    IdempotentKey getKey(String uuid);
+    IdempotentKey getKey(String uuid) throws StoreException;
+
+    boolean saveKey(IdempotentKey idempotentKey) throws StoreException;
 
 }

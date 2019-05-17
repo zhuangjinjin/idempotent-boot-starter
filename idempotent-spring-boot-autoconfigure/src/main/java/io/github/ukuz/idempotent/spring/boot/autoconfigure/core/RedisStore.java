@@ -26,8 +26,13 @@ public class RedisStore implements Store {
     }
 
     @Override
-    public IdempotentKey getKey(String uuid) {
+    public IdempotentKey getKey(String uuid) throws StoreException {
         return null;
+    }
+
+    @Override
+    public boolean saveKey(IdempotentKey idempotentKey) throws StoreException {
+        return false;
     }
 
     public ApplicationContext getApplicationContext() {

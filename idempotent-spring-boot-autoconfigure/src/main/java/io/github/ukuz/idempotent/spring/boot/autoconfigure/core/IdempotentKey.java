@@ -18,7 +18,7 @@ public final class IdempotentKey implements Serializable {
     private int state;
     private int statusCode;
     private String statusMsg;
-    private String payload;
+    private byte[] payload;
     private Map<String, String> header;
 
     public String getUuid() {
@@ -53,11 +53,11 @@ public final class IdempotentKey implements Serializable {
         this.statusMsg = statusMsg;
     }
 
-    public String getPayload() {
+    public byte[] getPayload() {
         return payload;
     }
 
-    public void setPayload(String payload) {
+    public void setPayload(byte[] payload) {
         this.payload = payload;
     }
 
