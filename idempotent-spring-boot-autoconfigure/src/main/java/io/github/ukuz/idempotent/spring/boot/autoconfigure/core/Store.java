@@ -9,8 +9,10 @@ import io.github.ukuz.idempotent.spring.boot.autoconfigure.exception.StoreExcept
 @Spi
 public interface Store {
 
-    boolean contain(Key key) throws StoreException;
+    boolean contain(IdempotentKey idempotentKey) throws StoreException;
 
-    boolean atomicSaveWithExpire(Key key, int expireTime) throws StoreException;
+    boolean atomicSaveWithExpire(IdempotentKey idempotentKey, int expireTime) throws StoreException;
+
+    IdempotentKey getKey(String uuid);
 
 }

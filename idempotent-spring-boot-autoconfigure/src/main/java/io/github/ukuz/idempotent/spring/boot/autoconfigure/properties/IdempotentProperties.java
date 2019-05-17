@@ -12,11 +12,6 @@ import org.springframework.validation.annotation.Validated;
 public class IdempotentProperties {
 
     /**
-     * 是否开启幂等
-     */
-    private boolean enable = true;
-
-    /**
      * 幂等校验失效时间（单位：秒）
      */
     private int expireTime = 60;
@@ -26,13 +21,6 @@ public class IdempotentProperties {
      */
     private String store = "redis";
 
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
 
     public int getExpireTime() {
         return expireTime;

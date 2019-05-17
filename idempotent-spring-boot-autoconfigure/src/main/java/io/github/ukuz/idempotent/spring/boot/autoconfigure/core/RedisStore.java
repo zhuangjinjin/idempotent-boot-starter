@@ -16,13 +16,18 @@ public class RedisStore implements Store {
     }
 
     @Override
-    public boolean contain(Key key) throws StoreException {
+    public boolean contain(IdempotentKey idempotentKey) throws StoreException {
         return false;
     }
 
     @Override
-    public boolean atomicSaveWithExpire(Key key, int expireTime) throws StoreException {
+    public boolean atomicSaveWithExpire(IdempotentKey idempotentKey, int expireTime) throws StoreException {
         return false;
+    }
+
+    @Override
+    public IdempotentKey getKey(String uuid) {
+        return null;
     }
 
     public ApplicationContext getApplicationContext() {

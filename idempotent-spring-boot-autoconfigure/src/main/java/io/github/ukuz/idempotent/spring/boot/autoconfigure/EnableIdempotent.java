@@ -7,6 +7,9 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(IdempotentImportSelector.class)
+@Import(IdempotentImportBeanDefinitionRegistrar.class)
 public @interface EnableIdempotent {
+
+    boolean enable() default true;
+
 }

@@ -13,26 +13,23 @@ public final class Idempotent {
     private Store store;
     private IdempotentProperties properties;
 
-    public Idempotent(IdempotentProperties properties) {
+    public Idempotent(Store store, IdempotentProperties properties) {
+        this.store = store;
         this.properties = properties;
     }
 
-    public void setStore(Store store) {
-        this.store = store;
-    }
-
-    public boolean canAccess(Key key) throws StoreException {
+    public boolean canAccess(IdempotentKey idempotentKey) throws StoreException {
         //如果没有Key，就不能调用
-        if (key == Key.UNKOWN) {
+        if (idempotentKey == IdempotentKey.UNKOWN) {
             return false;
         }
         Assert.notNull(this.store, "store must not be null");
         try {
-            if (this.store.contain(key)) {
+            if (this.store.contain(idempotentKey)) {
                 //如果已经存在Key，则不能通过
                 return false;
             }
-            if (!this.store.atomicSaveWithExpire(key, properties.getExpireTime())) {
+            if (!this.store.atomicSaveWithExpire(idempotentKey, properties.getExpireTime())) {
                 //如果原子保存失败，则不能通过
                 return false;
             }
