@@ -14,7 +14,7 @@ public class IdempotentProperties {
     /**
      * 幂等校验失效时间（单位：秒）
      */
-    private int expireTime = 60;
+    private int expireTime = 60 * 10;
 
     /**
      * 默认采用redis存储

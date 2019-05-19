@@ -11,9 +11,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author ukuz90
@@ -37,11 +40,11 @@ public class IdempotentInterceptor implements HandlerInterceptor {
             //GET请求是天然幂等的
             return true;
         }
-        if (!method.getClass().isAnnotationPresent(RestController.class)) {
+        if (!method.getBeanType().isAnnotationPresent(RestController.class)) {
             //非RestController请求不处理
             return true;
         }
-        if (method.getClass().isAnnotationPresent(IdempotentEndPoint.class) || method.getMethodAnnotation(IdempotentEndPoint.class) != null) {
+        if (method.getBeanType().isAnnotationPresent(IdempotentEndPoint.class) || method.getMethodAnnotation(IdempotentEndPoint.class) != null) {
             //处理幂等
             String uuid = getUuid(request);
             Idempotent idempotent = beanFactory.getBean(Idempotent.class);
@@ -71,7 +74,7 @@ public class IdempotentInterceptor implements HandlerInterceptor {
         Idempotent idempotent = beanFactory.getBean(Idempotent.class);
         IdempotentKey key = idempotent.getKey(uuid);
         if (key != IdempotentKey.UNKOWN && key.getState() != IdempotentKey.STATE_FINISH) {
-            wrapResult(key, response, ex);
+            processResult(key, response, ex);
             idempotent.saveKey(key);
         }
     }
@@ -85,19 +88,29 @@ public class IdempotentInterceptor implements HandlerInterceptor {
         response.flushBuffer();
     }
 
-    private void wrapResult(IdempotentKey key, HttpServletResponse response, Exception ex) {
-
+    private void processResult(IdempotentKey key, HttpServletResponse response, Exception ex) {
+        //设置状态码
+        key.setStatusCode(response.getStatus());
+        //设置头信息
+        Collection<String> headerNames = response.getHeaderNames();
+        if (!headerNames.isEmpty()) {
+            Map<String, String> map = new HashMap<>(headerNames.size());
+            headerNames.forEach(headerName ->
+                map.put(headerName, response.getHeader(headerName))
+            );
+            key.setHeader(map);
+        }
     }
 
     private void writeBody(IdempotentKey key, HttpServletResponse response) throws IOException {
-        if (key.getStatusCode() != HttpStatus.OK.value()) {
+        if (key.getStatusCode() != HttpStatus.OK.value() && key.getStatusCode() > 0) {
             response.sendError(key.getStatusCode(), key.getStatusMsg());
         }
         if (key.getHeader() != null) {
             key.getHeader().forEach(response::addHeader);
         }
         if (key.getPayload() != null) {
-            StreamUtils.copy(key.getPayload(), response.getOutputStream());
+            StreamUtils.copy(key.getPayload().getBytes(), response.getOutputStream());
         }
     }
 

@@ -56,7 +56,7 @@ public final class Idempotent {
 
     public boolean saveKey(IdempotentKey key) throws StoreException {
         normalizeIdempotentKey(key);
-        return this.store.saveKey(key);
+        return this.store.saveKey(key, properties.getExpireTime());
     }
 
     private IdempotentKey normalizeIdempotentKey(IdempotentKey key) {

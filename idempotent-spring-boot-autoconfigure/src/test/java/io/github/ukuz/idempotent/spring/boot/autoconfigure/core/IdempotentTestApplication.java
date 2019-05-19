@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2019-05-17
  */
 @SpringBootApplication
-@EnableIdempotent
+//@EnableIdempotent
 public class IdempotentTestApplication {
 
     public static void main(String[] args) {

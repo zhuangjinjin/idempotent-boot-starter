@@ -15,6 +15,6 @@ public interface Store {
 
     IdempotentKey getKey(String uuid) throws StoreException;
 
-    boolean saveKey(IdempotentKey idempotentKey) throws StoreException;
+    boolean saveKey(IdempotentKey idempotentKey, int expireTime) throws StoreException;
 
 }

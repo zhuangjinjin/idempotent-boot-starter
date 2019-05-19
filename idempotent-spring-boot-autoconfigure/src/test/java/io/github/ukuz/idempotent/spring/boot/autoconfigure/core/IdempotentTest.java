@@ -17,7 +17,7 @@ public class IdempotentTest {
 
     @Test
     public void canAccess() throws StoreException {
-        boolean ret = idempotent.canAccess(IdempotentKey.UNKOWN);
+        boolean ret = idempotent.canAccess("");
         Assert.assertFalse(ret);
     }
 }
