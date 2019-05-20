@@ -5,7 +5,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * @author ukuz90
- * @date 2019-05-16
+ * @since 2019-05-16
  */
 @Validated
 @ConfigurationProperties("idempotent")

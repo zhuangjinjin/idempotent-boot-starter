@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author ukuz90
- * @date 2019-05-19
+ * @since 2019-05-19
  */
 @SpringBootApplication
 @EnableIdempotent

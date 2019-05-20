@@ -1,3 +1,4 @@
-rootProject.name = 'idempotent-spring-boot-starter'
+rootProject.name = 'idempotent-boot-starter'
 include 'idempotent-spring-boot-autoconfigure'
+include 'idempotent-spring-boot-starter'
 

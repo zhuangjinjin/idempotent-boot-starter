@@ -1,0 +1,144 @@
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+javadoc {
+    options {
+        encoding 'UTF-8'
+        charSet 'UTF-8'
+        author true
+        version true
+        title 'javadoc'
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+//signing {
+//    sign publishing.publications.mavenJava
+//}
+
+//dependencies {
+//    deployerJars 'org.apache.maven.wagon:wagon-http:2.2'
+//}
+
+def pomConfig = {
+    scm {
+        connection "scm:git:git@github.com:zhuangjinjin/${rootProject.name}.git"
+        developerConnection "scm:git:ssh@github.com:zhuangjinjin/${rootProject.name}.git"
+        url "${projectScmUrl}"
+    }
+    issueManagement {
+        system "Github Issue Tracker"
+        url "${projectScmUrl}/issues"
+    }
+    licenses {
+        license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+        }
+    }
+
+    developers {
+        developer {
+            name 'ukuz90'
+            email '171282086@qq.com'
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "${uploadOssSnapshotsUrl}")
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('url', "${projectScmUrl}")
+                root.appendNode('description': 'idempotent integration with springboot')
+                root.appendNode('name', "${project.name}")
+                root.appendNode('packaging', 'jar')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                def root = asNode()
+                root.dependencies.dependency.findAll {xmlDep ->
+                    if (project.configurations.optional.allDependencies.findAll {dep ->
+                        xmlDep.groupId.text() == dep.group && xmlDep.artifactId.text() == dep.name
+                    }) {
+                        def xmlOptional = xmlDep.optional[0];
+                        if (!xmlOptional) {
+                            xmlOptional = xmlDep.appendNode('optional')
+                        }
+                        xmlOptional.value = 'true'
+                    }
+
+                    if (project.configurations.implementation.allDependencies.findAll {dep ->
+                        xmlDep.groupId.text() == dep.group && xmlDep.artifactId.text() == dep.name
+                    }) {
+                        def xmlScope = xmlDep.scope[0];
+                        if (!xmlScope) {
+                            xmlScope = xmlDep.appendNode('scope')
+                        }
+                        xmlScope.value = 'compile'
+                    }
+
+                    if (project.configurations.compile.allDependencies.findAll {dep ->
+                        xmlDep.groupId.text() == dep.group && xmlDep.artifactId.text() == dep.name
+                    }) {
+                        def xmlScope = xmlDep.scope[0];
+                        if (!xmlScope) {
+                            xmlScope = xmlDep.appendNode('scope')
+                        }
+                        xmlScope.value = 'compile'
+                    }
+                }
+                root.appendNode('url', "${projectScmUrl}")
+//                root.appendNode('description': 'idempotent integration with springboot')
+                root.appendNode('name', "${project.name}")
+                if (project.name == rootProject.name) {
+                    root.appendNode('packaging', 'pom')
+                } else {
+                    root.appendNode('packaging', 'jar')
+                }
+                root.children().last() + pomConfig
+            }
+            repositories {
+                maven {
+                    name 'remoteArtifactory'
+                    url "${uploadUrl}"
+                    credentials {
+                        username = project.hasProperty("nexusUsername") ? nexusUsername : System.getenv("nexusUsername")
+                        password = project.hasProperty("nexusPassword") ? nexusPassword : System.getenv("nexusPassword")
+                    }
+                }
+            }
+
+        }
+
+    }
+
+}
+
+

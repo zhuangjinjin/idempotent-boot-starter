@@ -3,7 +3,7 @@ package io.github.ukuz.idempotent.spring.boot.autoconfigure.exception;
 
 /**
  * @author ukuz90
- * @date 2019-05-16
+ * @since 2019-05-16
  */
 public class StoreException extends Exception {
 

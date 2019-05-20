@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * @author ukuz90
- * @date 2019-05-16
+ * @since 2019-05-16
  */
 public class StoreFactoryBean implements FactoryBean<Store>, ApplicationContextAware {
 

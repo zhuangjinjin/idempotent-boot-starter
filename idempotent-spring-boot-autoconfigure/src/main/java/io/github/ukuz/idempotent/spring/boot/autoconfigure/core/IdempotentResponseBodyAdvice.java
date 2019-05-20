@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * @author ukuz90
- * @date 2019-05-19
+ * @since 2019-05-19
  */
 @ControllerAdvice
 public class IdempotentResponseBodyAdvice implements ResponseBodyAdvice<Object> {

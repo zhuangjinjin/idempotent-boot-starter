@@ -1,0 +1,40 @@
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked"
+}
+
+configurations {
+//    deployerJars
+    optional
+    compile.extendsFrom optional
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+            include '**/*'
+
+            srcDir 'src/main/java'
+            include '**/*'
+            exclude '**/*.jar'
+        }
+    }
+
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+            include '**/*'
+
+            srcDir 'src/test/java'
+            include '**/*'
+            exclude '**/*.jar'
+        }
+    }
+}

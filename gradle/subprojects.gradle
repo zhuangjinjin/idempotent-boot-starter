@@ -1,0 +1,17 @@
+subprojects {
+    apply from: "$rootDir/gradle/extra/plugins.gradle"
+    apply from: "$rootDir/gradle/extra/compile.gradle"
+    apply from: "$rootDir/gradle/extra/ext.gradle"
+    apply from: "$rootDir/gradle/extra/publish.gradle"
+
+    group "${groupId}"
+    version "${projectVersion}"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        maven{url 'http://bsf.xyzcs.aiwan4399.com/repository/maven-public/'}
+    }
+}

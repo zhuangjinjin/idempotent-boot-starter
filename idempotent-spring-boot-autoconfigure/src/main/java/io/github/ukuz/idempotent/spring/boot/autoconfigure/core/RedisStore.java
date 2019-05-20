@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author ukuz90
- * @date 2019-05-16
+ * @since 2019-05-16
  */
 public class RedisStore implements Store {
 

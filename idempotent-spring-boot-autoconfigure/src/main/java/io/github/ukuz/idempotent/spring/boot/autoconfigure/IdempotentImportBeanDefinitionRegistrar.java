@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 /**
  * @author ukuz90
- * @date 2019-05-16
+ * @since 2019-05-16
  */
 public class IdempotentImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
