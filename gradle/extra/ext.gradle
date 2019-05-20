@@ -2,7 +2,7 @@ ext {
     groupId = 'io.github.ukuz'
     uploadUrl = 'http://bsf.xyzcs.aiwan4399.com:8090/repository/maven-releases/'
     uploadOssSnapshotsUrl = 'http://bsf.xyzcs.aiwan4399.com:8090/repository/maven-public/'
-    projectVersion = '1.0.0'
+    projectVersion = '1.1.0'
     projectScmUrl = "https://github.com/zhuangjinjin/${rootProject.name}"
     springBootVersion = '2.1.2.RELEASE'
 }

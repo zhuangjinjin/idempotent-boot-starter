@@ -115,7 +115,6 @@ publishing {
                     }
                 }
                 root.appendNode('url', "${projectScmUrl}")
-//                root.appendNode('description': 'idempotent integration with springboot')
                 root.appendNode('name', "${project.name}")
                 if (project.name == rootProject.name) {
                     root.appendNode('packaging', 'pom')
