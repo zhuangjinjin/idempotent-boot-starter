@@ -5,6 +5,7 @@ import io.github.ukuz.idempotent.spring.boot.autoconfigure.exception.StoreExcept
 /**
  * @author ukuz90
  * @since 2019-05-16
+ * @see RedisStore
  */
 @Spi
 public interface Store {

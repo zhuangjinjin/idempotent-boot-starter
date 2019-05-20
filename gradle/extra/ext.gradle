@@ -1,7 +1,7 @@
 ext {
     groupId = 'io.github.ukuz'
-    uploadUrl = 'http://bsf.xyzcs.aiwan4399.com:8090/repository/maven-releases/'
-    uploadOssSnapshotsUrl = 'http://bsf.xyzcs.aiwan4399.com:8090/repository/maven-public/'
+    uploadUrl = 'http://maven.zhuangjinjin.cn/repository/maven-releases/'
+    uploadOssUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
     projectVersion = '1.1.0'
     projectScmUrl = "https://github.com/zhuangjinjin/${rootProject.name}"
     springBootVersion = '2.1.2.RELEASE'

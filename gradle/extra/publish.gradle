@@ -60,7 +60,10 @@ def pomConfig = {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "${uploadOssSnapshotsUrl}")
+            repository(url: "${uploadOssUrl}") {
+                authentication(userName: project.hasProperty("ossUsername") ? ossUsername : System.getenv("ossUsername"),
+                        password: project.hasProperty("ossPassword") ? ossPassword : System.getenv("ossPassword"))
+            }
             pom.withXml {
                 def root = asNode()
                 root.appendNode('url', "${projectScmUrl}")
