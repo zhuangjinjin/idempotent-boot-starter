@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author ukuz90
  * @since 2019-05-16
+ * @see PluginLoader
  */
 public class RedisStore implements Store {
 
