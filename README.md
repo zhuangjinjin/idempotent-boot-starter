@@ -5,8 +5,6 @@ idempotent-spring-boot-starter 是分布式系统间调用的幂等实现。
 
 ## 使用
 
----
-
 ### Maven
 
 在pom.xml中加入nexus资源库
@@ -106,8 +104,6 @@ idempotent.expire-time=600
 ### 服务调用方
 
 每次发起一次新的请求，需要带上一个`X_REQ_SEQ_ID`请求头参数，值可以用全局唯一ID(UUID)。
-
----
 
 ## 扩展
 
