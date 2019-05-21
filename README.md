@@ -1,8 +1,6 @@
 # Idempotent integration with spring-boot
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
----
-
 idempotent-spring-boot-starter 是分布式系统间调用的幂等实现。
 
 ## 使用
@@ -78,6 +76,8 @@ public class FooApplication {
 
 在Controller类上添加`@IdempotentEndPoint`或者在方法上加`@IdempotentEndPoint`，若在类上加`@IdempotentEndPoint`，就想当于所有对外的接口都加上`@IdempotentEndPoint`。
 
+> 注意: 这里只拦截`@RestController`注解的Controller类；还有`@GetMapping`注解的方法，就算加了`@IdempotentEndPoint`也不会触发幂等校验，所以要保证`@GetMapping`注解的方法天然幂等。
+
 ```java
 @RestController
 @RequestMapping("/bar/")
@@ -102,6 +102,10 @@ idempotent.store=redis
 #如果没设置，默认幂等的校验过期时间是600秒
 idempotent.expire-time=600
 ```
+
+### 服务调用方
+
+每次发起一次新的请求，需要带上一个`X_REQ_SEQ_ID`请求头参数，值可以用全局唯一ID(UUID)。
 
 ---
 
