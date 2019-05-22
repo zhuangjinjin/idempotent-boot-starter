@@ -15,6 +15,7 @@
  */
 ext {
     groupId = 'io.github.ukuz'
+    nexusRepoUrl = 'http://maven.zhuangjinjin.cn/repository/public/'
     uploadUrl = 'http://maven.zhuangjinjin.cn/repository/maven-releases/'
     uploadOssUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
     projectVersion = '1.1.1'

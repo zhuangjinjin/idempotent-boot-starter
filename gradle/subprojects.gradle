@@ -27,6 +27,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven{url 'http://bsf.xyzcs.aiwan4399.com/repository/maven-public/'}
+        maven{url "${nexusRepoUrl}"}
     }
 }
