@@ -17,9 +17,12 @@ package io.github.ukuz.idempotent.spring.boot.autoconfigure.core;
 
 import io.github.ukuz.idempotent.spring.boot.autoconfigure.anotation.IdempotentEndPoint;
 import io.github.ukuz.idempotent.spring.boot.autoconfigure.constants.Constant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StreamUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -40,6 +43,8 @@ import java.util.Collection;
 public class IdempotentInterceptor implements HandlerInterceptor {
 
     private BeanFactory beanFactory;
+
+    private static final Logger logger = LoggerFactory.getLogger(IdempotentInterceptor.class);
 
     public IdempotentInterceptor(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
@@ -62,14 +67,17 @@ public class IdempotentInterceptor implements HandlerInterceptor {
         if (method.getBeanType().isAnnotationPresent(IdempotentEndPoint.class) || method.getMethodAnnotation(IdempotentEndPoint.class) != null) {
             //处理幂等
             String uuid = getUuid(request);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: {}", Constant.X_REQ_SEQ_ID, uuid);
+            }
             Idempotent idempotent = beanFactory.getBean(Idempotent.class);
             if (!idempotent.canAccess(uuid)) {
                 //已经处理过
                 IdempotentKey key = idempotent.getKey(uuid);
                 if (key == IdempotentKey.UNKOWN || key.getState() == IdempotentKey.STATE_PROCEED) {
-                    inProceed(response);
+                    inProceed(response, uuid);
                 } else if (key.getState() == IdempotentKey.STATE_FINISH) {
-                    writeBody(key, response);
+                    writeBody(key, response, uuid, method);
                 }
                 return false;
             }
@@ -88,7 +96,7 @@ public class IdempotentInterceptor implements HandlerInterceptor {
         String uuid = getUuid(request);
         Idempotent idempotent = beanFactory.getBean(Idempotent.class);
         IdempotentKey key = idempotent.getKey(uuid);
-        if (key != IdempotentKey.UNKOWN && key.getState() != IdempotentKey.STATE_FINISH) {
+        if (key != IdempotentKey.UNKOWN) {
             processResult(key, response, ex);
             idempotent.saveKey(key);
         }
@@ -98,35 +106,49 @@ public class IdempotentInterceptor implements HandlerInterceptor {
         return request.getHeader(Constant.X_REQ_SEQ_ID);
     }
 
-    private void inProceed(HttpServletResponse response) throws IOException {
+    private void inProceed(HttpServletResponse response, String uuid) throws IOException {
+        if (logger.isInfoEnabled()) {
+            logger.debug("retry and get result, [{}:{}] waiting...", Constant.X_REQ_SEQ_ID, uuid);
+        }
         response.sendError(HttpStatus.ACCEPTED.value(), "正在处理中...");
         response.flushBuffer();
     }
 
     private void processResult(IdempotentKey key, HttpServletResponse response, Exception ex) {
         //设置状态码
-        key.setStatusCode(response.getStatus());
+        if (key.getStatusCode() == 0) {
+            key.setStatusCode(response.getStatus());
+        }
         //设置头信息
-        Collection<String> headerNames = response.getHeaderNames();
-        if (!headerNames.isEmpty()) {
-            Map<String, String> map = new HashMap<>(headerNames.size());
-            headerNames.forEach(headerName ->
-                map.put(headerName, response.getHeader(headerName))
-            );
-            key.setHeader(map);
+        if (CollectionUtils.isEmpty(key.getHeader())) {
+            Collection<String> headerNames = response.getHeaderNames();
+            if (!headerNames.isEmpty()) {
+                Map<String, String> map = new HashMap<>(headerNames.size());
+                headerNames.forEach(headerName ->
+                        map.put(headerName, response.getHeader(headerName))
+                );
+                key.setHeader(map);
+            }
         }
     }
 
-    private void writeBody(IdempotentKey key, HttpServletResponse response) throws IOException {
+    private void writeBody(IdempotentKey key, HttpServletResponse response, String uuid, HandlerMethod method) throws IOException, ClassNotFoundException {
         if (key.getStatusCode() != HttpStatus.OK.value() && key.getStatusCode() > 0) {
             response.sendError(key.getStatusCode(), key.getStatusMsg());
         }
         if (key.getHeader() != null) {
             key.getHeader().forEach(response::addHeader);
         }
-        if (key.getPayload() != null) {
-            StreamUtils.copy(key.getPayload().getBytes(), response.getOutputStream());
+
+        if (!StringUtils.isEmpty(key.getPayload())) {
+            //写内容
+            if (logger.isInfoEnabled()) {
+                logger.info("retry and get result, [{}:{}] body: {}", Constant.X_REQ_SEQ_ID, uuid, new String(key.getPayload().getBytes()));
+            }
+            response.getOutputStream().write(key.getPayload().getBytes());
+            response.getOutputStream().flush();
         }
+
     }
 
 }

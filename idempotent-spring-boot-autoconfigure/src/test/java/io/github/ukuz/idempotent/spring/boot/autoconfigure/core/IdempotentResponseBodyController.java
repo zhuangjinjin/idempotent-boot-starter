@@ -34,9 +34,23 @@ public class IdempotentResponseBodyController {
 
     @PutMapping("pay")
     @IdempotentEndPoint
-    public ResponseEntity<Integer> pay(int payMoney) {
+    public TradeInfo pay(int payMoney) {
         int result = balance.addAndGet(-1 * payMoney);
-        return new ResponseEntity<Integer>(result, HttpStatus.OK);
+        TradeInfo tradeInfo = new TradeInfo();
+        tradeInfo.setBalance(result);
+        return tradeInfo;
+    }
+
+    public static class TradeInfo {
+        private int balance;
+
+        public int getBalance() {
+            return balance;
+        }
+
+        public void setBalance(int balance) {
+            this.balance = balance;
+        }
     }
 
 }

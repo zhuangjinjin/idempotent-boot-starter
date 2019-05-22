@@ -68,22 +68,22 @@ public class IdempotentResponseBodyAdvice implements ResponseBodyAdvice<Object> 
 
         try {
             IdempotentKey key = idempotent.getKey(uuid.get(0));
-            if (body instanceof String) {
-                key.setPayload(body.toString());
-            } else if (body instanceof ResponseEntity) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                String str = objectMapper.writeValueAsString(((ResponseEntity) body).getBody());
-                key.setPayload(str);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String payload;
+            if (body instanceof ResponseEntity) {
+                payload = objectMapper.writeValueAsString(((ResponseEntity) body).getBody());
             } else {
-                ObjectMapper objectMapper = new ObjectMapper();
-                String str = objectMapper.writeValueAsString(body);
-                key.setPayload(str);
+                payload = objectMapper.writeValueAsString(body);
             }
+            key.setPayload(payload);
+            key.setMediaTypeName(selectedContentType.toString());
+
             idempotent.saveKey(key);
         } catch (StoreException | JsonProcessingException e) {
             e.printStackTrace();
         }
         return body;
-
     }
+
+
 }

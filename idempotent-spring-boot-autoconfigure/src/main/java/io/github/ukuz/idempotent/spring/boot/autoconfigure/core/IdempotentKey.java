@@ -34,6 +34,7 @@ public final class IdempotentKey implements Serializable {
     private int statusCode;
     private String statusMsg;
     private String payload;
+    private String mediaTypeName;
     private Map<String, String> header;
 
     public String getUuid() {
@@ -74,6 +75,14 @@ public final class IdempotentKey implements Serializable {
 
     public void setPayload(String payload) {
         this.payload = payload;
+    }
+
+    public String getMediaTypeName() {
+        return mediaTypeName;
+    }
+
+    public void setMediaTypeName(String mediaTypeName) {
+        this.mediaTypeName = mediaTypeName;
     }
 
     public Map<String, String> getHeader() {
