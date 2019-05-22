@@ -31,7 +31,7 @@ idempotent-spring-boot-starter 是分布式系统间调用的幂等实现。
 <dependency>
    <groupId>io.github.ukuz</groupId>
    <artifactId>idempotent-spring-boot-starter</artifactId>
-   <version>1.1.0</version>
+   <version>1.1.1</version>
  </dependency>
 ```
 
