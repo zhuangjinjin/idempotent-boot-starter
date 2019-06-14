@@ -18,7 +18,7 @@ ext {
     nexusRepoUrl = 'http://maven.zhuangjinjin.cn/repository/public/'
     uploadUrl = 'http://maven.zhuangjinjin.cn/repository/maven-releases/'
     uploadOssUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    projectVersion = '1.1.1'
+    projectVersion = '1.1.2'
     projectScmUrl = "https://github.com/zhuangjinjin/${rootProject.name}"
     springBootVersion = '2.1.2.RELEASE'
 }

@@ -119,7 +119,7 @@ publishing {
                         if (!xmlScope) {
                             xmlScope = xmlDep.appendNode('scope')
                         }
-                        xmlScope.value = 'compile'
+                        xmlScope.value = 'runtime'
                     }
 
                     if (project.configurations.compile.allDependencies.findAll {dep ->
