@@ -31,8 +31,8 @@ idempotent-spring-boot-starter 是分布式系统间调用的幂等实现。
 <dependency>
    <groupId>io.github.ukuz</groupId>
    <artifactId>idempotent-spring-boot-starter</artifactId>
-   <version>1.1.1</version>
- </dependency>
+   <version>1.1.2</version>
+</dependency>
 ```
 
 ### Gradle
@@ -92,7 +92,15 @@ public class BarController {
 
 ### Springboot 外部化配置
 
-在application.properties中设置相关信息
+在application.yml中设置相关信息
+
+```yaml
+idempotent:
+  store: redis #如果没设置，默认采用Redis存储已处理的请求
+  expire-time: 600 #如果没设置，默认幂等的校验过期时间是600秒
+```
+
+或者，在application.properties中设置相关信息
 
 ```properties
 #如果没设置，默认采用Redis存储已处理的请求
